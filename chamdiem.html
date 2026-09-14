@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Chấm Điểm Thi Đua Lớp - Chuyên Lê Quý Đôn - 10 Lý 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #0284c7;
+            --accent-hover: #0369a1;
+            --bg-card: rgba(255, 255, 255, 0.94); 
+            --text-main: #1e293b;
+            --border-color: rgba(203, 213, 225, 0.8);
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif !important;
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            min-height: 100vh;
+            background: #0b1329 linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background-image: url('background.jpg'), linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-panel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-panel button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .auth-panel button:hover { background-color: var(--accent-hover); }
+
+        .auth-panel button.secondary-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .auth-panel button.secondary-btn:hover { background-color: rgba(255, 255, 255, 0.3); }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        nav button:hover { color: white; }
+        nav button.active { color: #38bdf8; }
+
+        nav button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background-color: #38bdf8;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            min-height: 75vh;
+            margin: 30px auto;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 35px 45px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-sizing: border-box;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        h3 { color: #0284c7; font-size: 18px; margin-top: 25px; margin-bottom: 15px;}
+
+        /* --- STYLES DANH SÁCH MỤC CỘNG ĐIỂM --- */
+        .bonus-section-header {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .bonus-card {
+            background: rgba(240, 253, 244, 0.95);
+            border: 1px solid #a7f3d0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .bonus-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        .bonus-info {
+            font-weight: 600;
+            color: #065f46;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .bonus-sub {
+            font-size: 12px;
+            color: #047857;
+            margin-top: 3px;
+            font-weight: 400;
+        }
+
+        .bonus-badge {
+            background-color: #16a34a;
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(22, 163, 74, 0.2);
+        }
+
+        /* --- STYLES NỘI QUY & ACCORDION --- */
+        .rule-item {
+            background: rgba(255, 255, 255, 0.85);
+            border-left: 4px solid var(--accent-color);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            font-size: 14.5px;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .accordion {
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .accordion summary {
+            padding: 16px 20px;
+            font-weight: 700;
+            cursor: pointer;
+            background: rgba(241, 245, 249, 0.9);
+            color: var(--primary-color);
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+        }
+
+        .accordion summary::-webkit-details-marker { display: none; }
+        .accordion summary::after {
+            content: '▼';
+            font-size: 12px;
+            color: var(--accent-color);
+            transition: transform 0.3s;
+        }
+        .accordion[open] summary::after { transform: rotate(180deg); }
+        .accordion-content { padding: 18px 22px; font-size: 14px; line-height: 1.7; color: #334155; }
+        .accordion-content ul { margin: 0; padding-left: 20px; }
+        .accordion-content li { margin-bottom: 8px; }
+
+        /* --- STYLES BẢNG ĐIỂM & BẢNG QUY ĐỊNH --- */
+        .rule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .rule-table th, .rule-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 13.5px;
+        }
+
+        .rule-table th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .rule-table tr:nth-child(even) {
+            background-color: rgba(248, 250, 252, 0.6);
+        }
+
+        .rule-table .points-minus {
+            color: #dc2626;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        select, input[type="text"], input[type="number"], input[type="password"] {
+            padding: 10px 14px;
+            font-size: 14.5px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: rgba(255,255,255,0.95);
+            font-family: inherit;
+        }
+
+        button.action-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        button.action-btn:hover { background-color: var(--accent-hover); }
+        button.danger-btn { background-color: #ef4444; }
+        button.danger-btn:hover { background-color: #dc2626; }
+        button.success-btn { background-color: #16a34a; }
+        button.success-btn:hover { background-color: #15803d; }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        table.data-table th, table.data-table td {
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 14.5px;
+        }
+
+        table.data-table th { background-color: rgba(248, 250, 252, 0.9); color: #334155; font-weight: 700; }
+
+        .leader-badge {
+            background-color: #fef08a; color: #854d0e; padding: 2px 8px;
+            border-radius: 12px; font-size: 11px; font-weight: 700;
+            margin-left: 8px; border: 1px solid #fde047;
+        }
+
+        .history-box { font-size: 13px; color: #475569; max-height: 110px; overflow-y: auto; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 3px; }
+        .history-item:last-child { border-bottom: none; }
+        .del-history-btn {
+            background: none; border: none; color: #94a3b8; cursor: pointer;
+            font-size: 12px; padding: 0 4px; margin-left: 6px; font-weight: bold;
+        }
+        .del-history-btn:hover { color: #dc2626; }
+
+        .score-display { font-size: 19px; font-weight: 800; color: #0284c7; text-align: center; }
+
+        /* Modals */
+        .modal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.75); backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: white; padding: 28px; border-radius: 14px;
+            width: 460px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-content h3 { margin-top: 0; margin-bottom: 18px; color: var(--primary-color); }
+        .modal-content label { display: block; font-weight: 600; font-size: 13.5px; margin-bottom: 6px; color: #334155; }
+        .modal-content select, .modal-content input { width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+        .modal-content button { width: 100%; padding: 11px; margin-bottom: 8px; border-radius: 6px; }
+
+        input:disabled, select:disabled {
+            background-color: #f1f5f9 !important;
+            color: #64748b !important;
+            cursor: not-allowed;
+        }
+
+        @media print {
+            header, nav, .controls, #thAction, .auth-panel, button, .del-history-btn { display: none !important; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 0; background: white; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>⚛️ Thi Đua Lớp - Trường THPT Chuyên Lê Quý Đôn - 10 Lý 1</h1>
+    <div class="auth-panel">
+        <span id="welcomeText" style="margin-right: 5px; display: none; font-size: 14px;"></span>
+        <button id="changePassBtn" class="secondary-btn" onclick="openChangePass()" style="display: none;">🔑 Đổi Mật Khẩu</button>
+        <button id="loginBtn" onclick="openLogin()">Đăng Nhập Quản Lý</button>
+        <button id="logoutBtn" class="secondary-btn" onclick="logout()" style="display: none;">Đăng Xuất</button>
+    </div>
+</header>
+
+<nav>
+    <button class="tab-btn active" onclick="openTab(event, 'noiquy')">Nội Quy Nhà Trường</button>
+    <button class="tab-btn" onclick="openTab(event, 'cachchamdiem')">Cách Chấm Điểm & Quy Tắc Cộng/Trừ</button>
+    <button class="tab-btn" onclick="openTab(event, 'quanlydiem')">Bảng Điểm Thi Đua</button>
+</nav>
+
+<div class="container">
+    <!-- TAB NỘI QUY -->
+    <div id="noiquy" class="tab-content active">
+        <h2>📜 Nội Quy & Quy Định Nhà Trường</h2>
+        <p style="color: #64748b; font-size: 14px; margin-top: -8px; margin-bottom: 20px;">Trường THPT Chuyên Lê Quý Đôn — Áp dụng cho năm học 2026 - 2027</p>
+
+        <!-- Bản tóm tắt nhanh 7 Điều Trọng Tâm -->
+        <h3>🌟 7 Điều Kỷ Luật Trọng Tâm Học Sinh</h3>
+        <div class="rule-item"><strong>Điều 1 (Kính thầy yêu bạn):</strong> Kính trọng, lễ phép với thầy cô giáo, cán bộ công nhân viên và người lớn tuổi. Xây dựng văn hóa ứng xử văn minh, đoàn kết; nghiêm cấm mọi hành vi gây rối, đánh nhau hoặc lôi kéo bè phái.</div>
+        <div class="rule-item"><strong>Điều 2 (Học tập nghiêm túc):</strong> Đến lớp phải học bài và làm bài đầy đủ. Tuyệt đối không gian lận trong kiểm tra và thi cử. Không sử dụng điện thoại di động trong giờ học khi chưa được giáo viên cho phép.</div>
+        <div class="rule-item"><strong>Điều 3 (Chuyên cần & Đơn phép):</strong> Đi học đúng giờ, không cúp học, không bỏ tiết giữa chừng. Nghỉ học phải có đơn xin phép do cha mẹ/người giám hộ xác nhận. Nghỉ quá 2 ngày phải có phụ huynh trực tiếp đến làm việc với GVCN/BGH.</div>
+        <div class="rule-item"><strong>Điều 4 (Trang phục & Diện mạo):</strong> Thực hiện nghiêm túc quy định đồng phục, đeo phù hiệu/thẻ học sinh đầy đủ. Nam sinh không để tóc dài, cạo trọc hay đeo bông tai; học sinh không nhuộm tóc màu nổi bật.</div>
+        <div class="rule-item"><strong>Điều 5 (ATGT & Chất cấm):</strong> Nghiêm cấm hút thuốc (bao gồm thuốc lá điện tử), uống rượu bia, sử dụng chất kích thích. Nghiêm cấm điều khiển xe máy trên 50cc khi chưa đủ tuổi hoặc chưa có giấy phép lái xe theo luật định.</div>
+        <div class="rule-item"><strong>Điều 6 (Bảo vệ tài sản & Vệ sinh):</strong> Tích cực tham gia trực nhật, giữ gìn vệ sinh chung, không xả rác bừa bãi. Có ý thức bảo vệ tài sản nhà trường; nghiêm cấm viết, vẽ, làm hư hỏng bàn ghế và tường học.</div>
+        <div class="rule-item"><strong>Điều 7 (Phong trào & Khen thưởng):</strong> Nghiêm túc tham gia các hoạt động ngoại khóa, lao động, sinh hoạt tập thể và kỳ thi HSG. Học sinh thực hiện tốt sẽ được tuyên dương khen thưởng; vi phạm sẽ chịu hình thức xử lý kỷ luật.</div>
+
+        <!-- Sổ Tay Chi Tiết -->
+        <div style="margin-top: 35px;">
+            <h3>📋 Chi Tiết Sổ Tay Quy Định Nề Nếp Học Sinh (Đầy Đủ)</h3>
+
+            <details class="accordion" open>
+                <summary>A. QUY ĐỊNH CHUNG & TƯ CÁCH HỌC SINH</summary>
+                <div class="accordion-content">
+                    <ul>
+                        <li>Chấp hành nghiêm túc đường lối, chính sách pháp luật của Nhà nước, quy định của ngành Giáo dục và quy chế của Trường THPT Chuyên Lê Quý Đôn.</li>
+                        <li>Nêu cao tinh thần tự giác, hiếu học, tôn sư trọng đạo, giữ gìn và phát huy truyền thống tốt đẹp của nhà trường.</li>
+                        <li>Tôn trọng quyền lợi của người khác, sống trung thực, lành mạnh, văn minh, đoàn kết và giúp đỡ bạn bè cùng tiến bộ.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="accordion">
+                <summary>B. TRANG PHỤC, ĐỒNG PHỤC & DIỆN MẠO CÁ NHÂN</summary>
+                <div class="accordion-content">
+                    <ul>
+                        <li><strong>Áo quần đồng phục:</strong> Mặc đúng đồng phục theo quy định vào các ngày trong tuần (Áo sơ mi trắng có logo/phù hiệu trường, quần tây tối màu/váy quy định). Không mặc áo quần cắt xẻ, biến tấu sai quy chuẩn.</li>
+                        <li><strong>Đồng phục Thể dục / QP-AN:</strong> Mặc đúng trang phục chuyên dụng trong các tiết học Thể dục và Giáo dục Quốc phòng - An ninh.</li>
+                        <li><strong>Thẻ học sinh & Phù hiệu:</strong> Đeo thẻ học sinh / may phù hiệu trên ngực áo trái đầy đủ khi vào cổng trường và trong suốt thời gian sinh hoạt tại trường.</li>
+                        <li><strong>Giày dép:</strong> Đi giày hoặc dép có quai hậu chắc chắn, lịch sự. Nghiêm cấm đi dép lê, dép xỏ ngón đến trường.</li>
+                        <li><strong>Đầu tóc & Trang điểm:</strong> Tóc gọn gàng, màu sắc tự nhiên (không nhuộm màu sặc sỡ). Nam sinh không để tóc dài quá gáy, không cạo trọc theo phong cách dị biệt. Không trang điểm quá đậm, không sơn móng tay/móng chân màu sặc sỡ.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="accordion">
+                <summary>C. GIỜ GIẤC, CHUYÊN CẦN & QUY ĐỊNH XIN NGHỈ HỌC</summary>
+                <div class="accordion-content">
+                    <ul>
+                        <li><strong>Giờ tập trung:</strong> Buổi sáng có mặt trước 07h00 (Bắt đầu học 07h05); Buổi chiều có mặt trước 13h45 (Bắt đầu học 13h50). Học sinh đi trễ sau thời gian trên phải đăng ký tại cổng bảo vệ.</li>
+                        <li><strong>Chào cờ & Sinh hoạt tập thể:</strong> Có mặt đông đủ, đúng giờ, xếp hàng thẳng, giữ trật tự và thực hiện nghi lễ chào cờ nghiêm túc.</li>
+                        <li><strong>Vắng mặt / Xin nghỉ học:</strong>
+                            <ul>
+                                <li>Nghỉ học phải có đơn xin phép do Cha/Mẹ hoặc người giám hộ hợp pháp ký tên và nộp cho GVCN trước buổi học.</li>
+                                <li>Nghỉ từ 02 ngày trở lên: Phụ huynh phải trực tiếp đến gặp GVCN hoặc Ban Giám Hiệu để trình bày lý do và làm thủ tục xin phép.</li>
+                                <li>Tất cả trường hợp nghỉ học không phép sẽ bị tính vi phạm chuyên cần và hạ bậc rèn luyện.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Bỏ tiết / Ra ngoài trường:</strong> Không tự ý rời khỏi lớp học hoặc khuôn viên trường trong giờ học/giờ ra chơi khi chưa có sự đồng ý của GVCN, GVBM hoặc Ban BGH.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="accordion">
+                <summary>D. NỀ NẾP HỌC TẬP & SỬ DỤNG THIẾT BỊ ĐIỆN TỬ</summary>
+                <div class="accordion-content">
+                    <ul>
+                        <li>Chuẩn bị bài, làm bài tập về nhà đầy đủ và mang đầy đủ sách vở, dụng cụ học tập trước khi đến lớp.</li>
+                        <li>Giữ trật tự, tập trung nghe giảng, không nói chuyện riêng, làm việc riêng hoặc ăn uống trong giờ học.</li>
+                        <li><strong>Sử dụng Điện thoại / Máy tính:</strong> Chỉ được phép sử dụng thiết bị điện tử khi giáo viên bộ môn cho phép phục vụ mục đích học tập. Trong giờ học thông thường, thiết bị phải được tắt nguồn hoặc để chế độ im lặng cất trong cặp.</li>
+                        <li><strong>Trung thực học tập:</strong> Tuyệt đối không chép bài, quay cóp, gian lận trong kiểm tra, thi cử hoặc nhờ người khác thi/kiểm tra hộ.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="accordion">
+                <summary>E. BẢO VỆ TÀI SẢN, VỆ SINH & MÔI TRƯỜNG HỌC ĐƯỜNG</summary>
+                <div class="accordion-content">
+                    <ul>
+                        <li><strong>Nhiệm vụ trực nhật:</strong> Tổ trực nhật phải đến sớm trước giờ học 15 phút, lau bảng, quét dọn lớp học, hành lang và đổ rác đúng nơi quy định.</li>
+                        <li><strong>Giữ gìn tài sản chung:</strong> Bảo vệ bàn ghế, hệ thống điện, TV, máy chiếu, điều hòa của lớp. Không viết, vẽ, khắc lên bàn ghế, tường nhà. Nếu làm hư hỏng tài sản phải đền bù và chịu hình thức kỷ luật.</li>
+                        <li><strong>Tiết kiệm & Môi trường:</strong> Tắt điện, quạt, điều hòa, khóa nước khi ra khỏi phòng học. Không mang đồ ăn có mùi vào phòng máy lạnh, bỏ rác đúng nơi phân loại rác thải.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="accordion">
+                <summary>F. AN TOÀN GIAO THÔNG, AN NINH & CÁC CẤM TRÁCH KHÁC</summary>
+                <div class="accordion-content">
+                    <ul>
+                        <li><strong>An toàn giao thông:</strong>
+                            <ul>
+                                <li>Nghiêm túc chấp hành Luật Giao thông: Đội mũ bảo hiểm đạt chuẩn khi đi xe máy điện, xe đạp điện.</li>
+                                <li>Nghiêm cấm học sinh chưa đủ tuổi / chưa có giấy phép lái xe điều khiển xe máy có dung tích xi-lanh từ 50cm³ trở lên.</li>
+                                <li>Không dàn hàng ngang trên đường, không lạng lách, đánh võng, dắt xe bộ khi vào cổng trường.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Các hành vi nghiêm cấm tuyệt đối:</strong>
+                            <ul>
+                                <li>Hút thuốc lá, thuốc lá điện tử, uống rượu bia, sử dụng chất ma túy hoặc chất kích thích dưới mọi hình thức.</li>
+                                <li>Mang vũ khí, chất cháy nổ, chất độc hại, hung khí hoặc tài liệu cấm vào trường.</li>
+                                <li>Tổ chức hoặc tham gia cờ bạc, cá độ, đánh nhau, lập hội nhóm gây mất an ninh trật tự.</li>
+                                <li>Phát tán thông tin sai sự thật, xúc phạm danh dự giáo viên, cán bộ nhà trường hoặc bạn bè trên không gian mạng (Facebook, TikTok,...).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="accordion">
+                <summary>G. KHEN THƯỞNG & HÌNH THỨC XỬ LÝ VI PHẠM KỶ LUẬT</summary>
+                <div class="accordion-content">
+                    <ul>
+                        <li><strong>Khen thưởng:</strong> Học sinh thực hiện tốt nội quy, đạt thành tích cao trong học tập, kỳ thi HSG, hoạt động phong trào sẽ được cộng điểm thi đua, tuyên dương trước trường và xét khen thưởng cuối kỳ.</li>
+                        <li><strong>Xử lý vi phạm:</strong> Tùy theo mức độ vi phạm, học sinh sẽ chịu các hình thức kỷ luật theo quy định của Bộ Giáo dục & Đào tạo:
+                            <ol>
+                                <li>Nhắc nhở, phê bình trước lớp / trừ điểm thi đua cá nhân và tổ.</li>
+                                <li>Viết bản kiểm điểm, thông báo và mời phụ huynh đến làm việc trực tiếp với nhà trường.</li>
+                                <li>Khiển trách và phê bình trước toàn trường trong giờ Chào cờ.</li>
+                                <li>Tạm dừng học tập có thời hạn (đình chỉ học tập) và xếp loại Rèn luyện (Hạnh kiểm) Chưa đạt.</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- TAB CÁCH CHẤM ĐIỂM VÀ CÁC MỤC CỘNG/TRỪ ĐIỂM -->
+    <div id="cachchamdiem" class="tab-content">
+        <h2>Bảng Hướng Dẫn & Danh Sách Quy Tắc Điểm Thi Đua</h2>
+
+        <!-- DẠNG BẢNG DANH SÁCH MỤC CỘNG ĐIỂM THEO BẬC GIẢI -->
+        <div id="bonusCardsContainer"></div>
+
+        <h3>📋 Chi Tiết Các Quy Định Trừ Điểm Thi Đua</h3>
+        <p style="font-size: 13.5px; color: #64748b; margin-bottom: 15px;"><i>Lưu ý: Các mục có dấu (*) thuộc nhóm vi phạm nghiêm trọng và không được tính điểm cộng bù trong tuần.</i></p>
+
+        <table class="rule-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Nhóm Vi Phạm</th>
+                    <th style="width: 55%;">Nội Dung Vi Phạm Quy Định</th>
+                    <th style="width: 20%; text-align: center;">Mức Trừ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td rowspan="4"><strong>1. Chuyên Cần & Giờ Giấc</strong></td>
+                    <td>Đi học trễ / Vào lớp sau giờ quy định</td>
+                    <td class="points-minus">-2 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Trốn tiết / Bỏ giờ học giữa chừng (*)</td>
+                    <td class="points-minus">-10 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Nghỉ học không phép / Không có đơn xác nhận (*)</td>
+                    <td class="points-minus">-5 điểm / ngày</td>
+                </tr>
+                <tr>
+                    <td>Tập trung chào cờ / Sinh hoạt tập thể muộn</td>
+                    <td class="points-minus">-2 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td rowspan="4"><strong>2. Nề Nếp & Trang Phục</strong></td>
+                    <td>Sai đồng phục, không đeo phù hiệu / thẻ học sinh</td>
+                    <td class="points-minus">-3 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Nhuộm tóc, nam để tóc dài, đeo bông tai trái quy định</td>
+                    <td class="points-minus">-5 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Sử dụng điện thoại di động trong giờ học khi chưa phép</td>
+                    <td class="points-minus">-5 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Điều khiển xe máy >50cc khi chưa đủ tuổi / không bằng lái (*)</td>
+                    <td class="points-minus">-10 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td rowspan="4"><strong>3. Học Tập & Kỷ Luật Class</strong></td>
+                    <td>Không thuộc bài / Không làm bài tập về nhà</td>
+                    <td class="points-minus">-5 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Làm việc riêng, mất trật tự trong giờ học</td>
+                    <td class="points-minus">-3 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Gian lận trong kiểm tra / Thi cử (*)</td>
+                    <td class="points-minus">-10 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Vô lễ với giáo viên, cán bộ công nhân viên (*)</td>
+                    <td class="points-minus">-20 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td rowspan="3"><strong>4. Vệ Sinh & Tài Sản</strong></td>
+                    <td>Trực nhật muộn / Trực nhật không sạch sẽ</td>
+                    <td class="points-minus">-5 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Xả rác bừa bãi trong lớp hoặc khuôn viên trường</td>
+                    <td class="points-minus">-3 điểm / lần</td>
+                </tr>
+                <tr>
+                    <td>Làm hư hỏng tài sản, vẽ bẩn lên bàn ghế/tường (*)</td>
+                    <td class="points-minus">-10 điểm + Bồi thường</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB QUẢN LÝ ĐIỂM -->
+    <div id="quanlydiem" class="tab-content">
+        <h2>Chấm Điểm & Xem Điểm Tổ</h2>
+        <div class="controls">
+            <label for="groupSelect"><strong>Chọn Tổ:</strong></label>
+            <select id="groupSelect" onchange="renderTable()">
+                <option value="Tổ 1">Tổ 1 (Tổ trưởng: Bảo Trân)</option>
+                <option value="Tổ 2">Tổ 2 (Tổ trưởng: Nghĩa)</option>
+                <option value="Tổ 3">Tổ 3 (Tổ trưởng: Đăng)</option>
+                <option value="Tổ 4">Tổ 4 (Tổ trưởng: Nguyên)</option>
+            </select>
+
+            <input type="text" id="searchInput" placeholder="🔍 Tìm tên học sinh..." oninput="renderTable()" style="width: 200px;">
+
+            <button class="action-btn secondary-btn" onclick="exportReport()" style="margin-left: auto; background-color: #475569;">🖨️ In / Báo Cáo</button>
+            <button id="resetBtn" class="action-btn danger-btn" onclick="resetData()" style="display: none;">Reset Toàn Lớp</button>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%">STT</th>
+                    <th style="width: 23%">Họ và Tên</th>
+                    <th style="width: 15%; text-align: center;">Điểm Hiện Tại</th>
+                    <th style="width: 37%">Lịch Sử Thay Đổi</th>
+                    <th id="thAction" style="width: 20%; display: none; text-align: center;">Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Cộng Điểm Tự Động / Tùy Chỉnh -->
+<div id="addBonusModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: #16a34a;">➕ Cộng Điểm Thi Đua</h3>
+        <p id="bonusStudentName" style="font-weight: 700; color: #0284c7; margin-top: -10px; margin-bottom: 15px;"></p>
+
+        <label for="bonusSelect">Chọn lý do cộng điểm theo quy định:</label>
+        <select id="bonusSelect" onchange="handleBonusSelectChange()"></select>
+
+        <label for="bonusPointsInput">Số điểm cộng (+):</label>
+        <input type="number" id="bonusPointsInput" min="1" max="50">
+
+        <label for="bonusReasonInput">Nội dung / Lý do ghi nhận:</label>
+        <input type="text" id="bonusReasonInput" placeholder="Nhập lý do...">
+
+        <button class="action-btn success-btn" onclick="submitBonusScore()">Xác Nhận Cộng Điểm</button>
+        <button class="action-btn danger-btn" onclick="closeBonusModal()">Hủy Bỏ</button>
+    </div>
+</div>
+
+<!-- Modal Trừ Điểm Tự Động / Tùy Chỉnh -->
+<div id="minusScoreModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: #dc2626;">➖ Trừ Điểm Thi Đua</h3>
+        <p id="minusStudentName" style="font-weight: 700; color: #0284c7; margin-top: -10px; margin-bottom: 15px;"></p>
+
+        <label for="minusSelect">Chọn vi phạm theo quy định:</label>
+        <select id="minusSelect" onchange="handleMinusSelectChange()"></select>
+
+        <label for="minusPointsInput">Số điểm trừ (-):</label>
+        <input type="number" id="minusPointsInput" min="1" max="50">
+
+        <label for="minusReasonInput">Nội dung / Lý do ghi nhận:</label>
+        <input type="text" id="minusReasonInput" placeholder="Nhập lý do...">
+
+        <button class="action-btn danger-btn" onclick="submitMinusScore()">Xác Nhận Trừ Điểm</button>
+        <button class="action-btn" style="background-color: #64748b;" onclick="closeMinusModal()">Hủy Bỏ</button>
+    </div>
+</div>
+
+<!-- Modal Đăng Nhập -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <h3>Đăng Nhập Quản Lý</h3>
+        <input type="text" id="username" placeholder="Tên đăng nhập">
+        <input type="password" id="password" placeholder="Mật khẩu">
+        <button class="action-btn" onclick="login()">Đăng Nhập</button>
+        <button class="action-btn danger-btn" onclick="closeLogin()">Hủy</button>
+    </div>
+</div>
+
+<!-- Modal Đổi Mật Khẩu -->
+<div id="changePassModal" class="modal">
+    <div class="modal-content">
+        <h3>🔑 Đổi Mật Khẩu</h3>
+        <input type="password" id="oldPass" placeholder="Mật khẩu hiện tại">
+        <input type="password" id="newPass" placeholder="Mật khẩu mới">
+        <input type="password" id="confirmPass" placeholder="Xác nhận mật khẩu mới">
+        <button class="action-btn" onclick="changePassword()">Cập Nhật Mật Khẩu</button>
+        <button class="action-btn danger-btn" onclick="closeChangePass()">Hủy Bỏ</button>
+    </div>
+</div>
+
+<script>
+    // --- DANH SÁCH MỤC CỘNG ĐIỂM CHIA THEO NHÓM VÀ BẬC GIẢI THƯỜNG ---
+    const bonusCategories = [
+        {
+            category: "🏆 Thi Học Sinh Giỏi & Phong Trào Cấp Quốc Gia",
+            rules: [
+                { title: "Giải Nhất - Cấp Quốc Gia", sub: "Thi HSG, KH-KT, Cuộc thi do Bộ GD&ĐT tổ chức", pts: 20 },
+                { title: "Giải Nhì - Cấp Quốc Gia", sub: "Thi HSG, KH-KT, Cuộc thi do Bộ GD&ĐT tổ chức", pts: 15 },
+                { title: "Giải Ba - Cấp Quốc Gia", sub: "Thi HSG, KH-KT, Cuộc thi do Bộ GD&ĐT tổ chức", pts: 12 },
+                { title: "Giải Khuyến Khích - Cấp Quốc Gia", sub: "Thi HSG, KH-KT, Cuộc thi do Bộ GD&ĐT tổ chức", pts: 10 }
+            ]
+        },
+        {
+            category: "🥇 Thi Học Sinh Giỏi & Phong Trào Cấp Thành Phố / Tỉnh",
+            rules: [
+                { title: "Giải Nhất - Cấp Thành Phố", sub: "Kỳ thi HSG, Phong trào cấp Thành phố/Tỉnh", pts: 15 },
+                { title: "Giải Nhì - Cấp Thành Phố", sub: "Kỳ thi HSG, Phong trào cấp Thành phố/Tỉnh", pts: 12 },
+                { title: "Giải Ba - Cấp Thành Phố", sub: "Kỳ thi HSG, Phong trào cấp Thành phố/Tỉnh", pts: 10 },
+                { title: "Giải Khuyến Khích - Cấp Thành Phố", sub: "Kỳ thi HSG, Phong trào cấp Thành phố/Tỉnh", pts: 8 }
+            ]
+        },
+        {
+            category: "🎗️ Phong Trào & Thể Thao / Văn Nghệ Cấp Trường",
+            rules: [
+                { title: "Giải Nhất - Cấp Trường", sub: "Hội thao, Văn nghệ, Cuộc thi do Đoàn Trường tổ chức", pts: 10 },
+                { title: "Giải Nhì - Cấp Trường", sub: "Hội thao, Văn nghệ, Cuộc thi do Đoàn Trường tổ chức", pts: 8 },
+                { title: "Giải Ba - Cấp Trường", sub: "Hội thao, Văn nghệ, Cuộc thi do Đoàn Trường tổ chức", pts: 6 },
+                { title: "Giải Khuyến Khích - Cấp Trường", sub: "Hội thao, Văn nghệ, Cuộc thi do Đoàn Trường tổ chức", pts: 4 },
+                { title: "Tham gia tích cực phong trào trường", sub: "Không đạt giải nhưng đóng góp năng nổ", pts: 3 }
+            ]
+        },
+        {
+            category: "📖 Học Tập & Rèn Luyện Hằng Ngày",
+            rules: [
+                { title: "Đạt điểm 9 - 10 bài kiểm tra", sub: "Áp dụng cho kiểm tra 15p, 1 tiết hoặc thi học kỳ", pts: 5 },
+                { title: "Phát biểu xây dựng bài xuất sắc", sub: "Được giáo viên bộ môn tuyên dương trong tiết", pts: 2 },
+                { title: "Nhặt được của rơi trả lại người mất", sub: "Hành động đẹp, trung thực", pts: 10 },
+                { title: "Trực nhật & Vệ sinh xuất sắc", sub: "Giữ vệ sinh lớp sạch đẹp, hoàn thành đúng giờ", pts: 5 },
+                { title: "Tổ đạt điểm thi đua cao nhất tuần", sub: "Cộng cho tất cả các thành viên trong tổ", pts: 5 },
+                { title: "Cán sự / Tổ trưởng hoàn thành xuất sắc", sub: "Được GVCN ghi nhận trong tuần", pts: 5 }
+            ]
+        }
+    ];
+
+    // --- DANH SÁCH CÁC MỤC TRỪ ĐIỂM CHUẨN ---
+    const minusRulesList = [
+        { title: "Đi học trễ / Vào lớp sau giờ quy định", pts: 2 },
+        { title: "Không thuộc bài / Không làm bài tập về nhà", pts: 5 },
+        { title: "Làm việc riêng / Mất trật tự trong giờ học", pts: 3 },
+        { title: "Sử dụng điện thoại di động không xin phép", pts: 5 },
+        { title: "Sai đồng phục / Không đeo phù hiệu", pts: 3 },
+        { title: "Nhuộm tóc / Vi phạm quy định diện mạo", pts: 5 },
+        { title: "Trực nhật muộn / Vệ sinh không sạch", pts: 5 },
+        { title: "Xả rác bừa bãi trong lớp/trường", pts: 3 },
+        { title: "Nghỉ học không phép", pts: 5 },
+        { title: "Trốn tiết / Bỏ giờ học giữa chừng (*)", pts: 10 },
+        { title: "Gian lận kiểm tra / Thi cử (*)", pts: 10 },
+        { title: "Đi xe máy >50cc khi chưa đủ tuổi (*)", pts: 10 },
+        { title: "Làm hư hỏng tài sản nhà trường (*)", pts: 10 },
+        { title: "Vô lễ với thầy cô / Cán bộ nhà trường (*)", pts: 20 }
+    ];
+
+    let flatBonusRules = [];
+    bonusCategories.forEach(cat => cat.rules.forEach(r => flatBonusRules.push(r)));
+
+    function renderBonusRules() {
+        const container = document.getElementById('bonusCardsContainer');
+        if(!container) return;
+        
+        let html = '';
+        bonusCategories.forEach(cat => {
+            html += `<div class="bonus-section-header">${cat.category}</div><div class="bonus-grid">`;
+            cat.rules.forEach(rule => {
+                html += `
+                    <div class="bonus-card">
+                        <div>
+                            <div class="bonus-info">${rule.title}</div>
+                            <div class="bonus-sub">${rule.sub}</div>
+                        </div>
+                        <span class="bonus-badge">+${rule.pts}đ</span>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // --- TÀI KHOẢN & MẬT KHẨU ---
+    const defaultUsers = {
+        'baotran': { pass: 'Ly1ABC@!', role: 'Tổ 1', name: 'Bảo Trân (TT Tổ 1)' },
+        'nghia': { pass: 'Ly1ABC@!', role: 'Tổ 2', name: 'Nghĩa (TT Tổ 2)' },
+        'dang': { pass: 'Ly1ABC@!', role: 'Tổ 3', name: 'Đăng (TT Tổ 3)' },
+        'nguyen': { pass: 'Ly1ABC@!', role: 'Tổ 4', name: 'Nguyên (TT Tổ 4)' },
+        'admin': { pass: 'Ly1ABC@!', role: 'admin', name: 'Giáo Viên / Lớp Trưởng' }
+    };
+
+    // Luôn áp dụng danh sách mật khẩu mới
+    localStorage.setItem('userPassData', JSON.stringify(defaultUsers));
+    let users = defaultUsers;
+
+    function saveUsers() { localStorage.setItem('userPassData', JSON.stringify(users)); }
+
+    let loggedInUserKey = sessionStorage.getItem('currentUsername') || null;
+
+    const initialData = {
+        "Tổ 1": { leader: "Nguyễn Minh Bảo Trân", members: ["Trần Nhật Đông", "Nguyễn Văn Ngọc", "Nguyễn Minh Bảo Trân", "Trần Quang Vinh", "Nguyễn Công Bảo", "Trương Hoàng Quân", "Bùi Hoàng Lâm", "Nguyễn Minh Trí", "Võ Thanh Liêm", "Bùi Đỗ Việt Anh"] },
+        "Tổ 2": { leader: "Nguyễn Minh Nghĩa", members: ["Bùi Đức Anh", "Lê Quang Minh", "Trương Huy Bách", "Hoàng Gia Phúc", "Trần Nguyễn Thái Huy", "Nguyễn Minh Nghĩa", "Phan Viết Hưng", "Đào Thanh Tùng Anh", "Đào Tiến Nam"] },
+        "Tổ 3": { leader: "Đặng Vĩnh Hải Đăng", members: ["Dương Quốc An", "Nguyễn Anh Tuấn Minh", "Đinh Xuân Nhân", "Vũ Quang Thành", "Đỗ Quang Huy", "Hoàng Trung Hiếu", "Hoàng Nam Phong", "Đặng Vĩnh Hải Đăng", "Trịnh Văn Danh", "Trương Minh Triết"] },
+        "Tổ 4": { leader: "Hoàng Khôi Nguyên", members: ["Trương Tấn Sang", "Phạm Hữu Bảo Sơn", "Nguyễn Hoàng Bách", "Nguyễn Ngọc Khôi", "Nguyễn Đức Kiên", "Hoàng Khôi Nguyên", "Vương Bảo Huy", "Nguyễn Minh Quang"] }
+    };
+
+    let classScores = JSON.parse(localStorage.getItem('thiDuaData2026'));
+    if (!classScores) initScores();
+
+    function initScores() {
+        classScores = {};
+        for (let group in initialData) {
+            classScores[group] = [];
+            initialData[group].members.forEach(name => {
+                classScores[group].push({ name: name, isLeader: name === initialData[group].leader, score: 100, history: [] });
+            });
+        }
+        saveData();
+    }
+    function saveData() { localStorage.setItem('thiDuaData2026', JSON.stringify(classScores)); }
+
+    // --- XỬ LÝ ĐÓNG MODAL KHI CLICK NGOÀI HOẶC ESC ---
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeBonusModal();
+            closeMinusModal();
+            closeLogin();
+            closeChangePass();
+        }
+    };
+
+    window.onkeydown = function(event) {
+        if (event.key === "Escape") {
+            closeBonusModal();
+            closeMinusModal();
+            closeLogin();
+            closeChangePass();
+        }
+    };
+
+    // --- ĐĂNG NHẬP / ĐỔI MẬT KHẨU ---
+    function openLogin() { 
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('loginModal').style.display = 'flex'; 
+    }
+    function closeLogin() { document.getElementById('loginModal').style.display = 'none'; }
+    
+    function openChangePass() { document.getElementById('changePassModal').style.display = 'flex'; }
+    function closeChangePass() { 
+        document.getElementById('changePassModal').style.display = 'none';
+        document.getElementById('oldPass').value = '';
+        document.getElementById('newPass').value = '';
+        document.getElementById('confirmPass').value = '';
+    }
+
+    function login() {
+        const u = document.getElementById('username').value.trim().toLowerCase();
+        const p = document.getElementById('password').value;
+        if(users[u] && users[u].pass === p) {
+            loggedInUserKey = u;
+            sessionStorage.setItem('currentUsername', u);
+            closeLogin();
+            updateAuthUI();
+            renderTable();
+        } else {
+            alert('Tên đăng nhập hoặc mật khẩu không đúng!');
+        }
+    }
+
+    function changePassword() {
+        if (!loggedInUserKey) return;
+        const oldP = document.getElementById('oldPass').value;
+        const newP = document.getElementById('newPass').value;
+        const confirmP = document.getElementById('confirmPass').value;
+
+        if (users[loggedInUserKey].pass !== oldP) return alert('Mật khẩu hiện tại không chính xác!');
+        if (!newP || newP.length < 3) return alert('Mật khẩu mới phải có ít nhất 3 ký tự!');
+        if (newP !== confirmP) return alert('Mật khẩu mới và xác nhận mật khẩu không khớp!');
+
+        users[loggedInUserKey].pass = newP;
+        saveUsers();
+        alert('Đổi mật khẩu thành công!');
+        closeChangePass();
+    }
+    
+    function logout() {
+        loggedInUserKey = null;
+        sessionStorage.removeItem('currentUsername');
+        updateAuthUI();
+        renderTable();
+    }
+
+    function updateAuthUI() {
+        const welcome = document.getElementById('welcomeText');
+        const btnIn = document.getElementById('loginBtn');
+        const btnOut = document.getElementById('logoutBtn');
+        const btnChangeP = document.getElementById('changePassBtn');
+        const btnReset = document.getElementById('resetBtn');
+
+        if (loggedInUserKey && users[loggedInUserKey]) {
+            const curUser = users[loggedInUserKey];
+            welcome.style.display = 'inline';
+            welcome.innerHTML = `Xin chào, <b>${curUser.name}</b>`;
+            btnIn.style.display = 'none';
+            btnOut.style.display = 'inline-block';
+            btnChangeP.style.display = 'inline-block';
+            btnReset.style.display = curUser.role === 'admin' ? 'inline-block' : 'none';
+        } else {
+            welcome.style.display = 'none';
+            btnIn.style.display = 'inline-block';
+            btnOut.style.display = 'none';
+            btnChangeP.style.display = 'none';
+            btnReset.style.display = 'none';
+        }
+    }
+
+    // --- CỘNG ĐIỂM (TỰ ĐỘNG & TÙY CHỈNH) ---
+    let currentEditing = { group: null, index: null };
+
+    function openBonusModal(group, studentIndex) {
+        currentEditing = { group, index: studentIndex };
+        const student = classScores[group][studentIndex];
+        document.getElementById('bonusStudentName').innerText = `Học sinh: ${student.name} (${group})`;
+
+        const select = document.getElementById('bonusSelect');
+        let optionsHtml = '';
+        
+        bonusCategories.forEach(cat => {
+            optionsHtml += `<optgroup label="${cat.category}">`;
+            cat.rules.forEach(r => {
+                let idx = flatBonusRules.indexOf(r);
+                optionsHtml += `<option value="${idx}">${r.title} (+${r.pts}đ)</option>`;
+            });
+            optionsHtml += `</optgroup>`;
+        });
+        optionsHtml += `<option value="custom">-- Lý do khác (Tự nhập điểm) --</option>`;
+
+        select.innerHTML = optionsHtml;
+        handleBonusSelectChange();
+        document.getElementById('addBonusModal').style.display = 'flex';
+    }
+
+    function closeBonusModal() {
+        document.getElementById('addBonusModal').style.display = 'none';
+    }
+
+    function handleBonusSelectChange() {
+        const select = document.getElementById('bonusSelect');
+        const val = select.value;
+        const ptsInput = document.getElementById('bonusPointsInput');
+        const reasonInput = document.getElementById('bonusReasonInput');
+
+        if(val === 'custom') {
+            ptsInput.value = '';
+            ptsInput.disabled = false;
+            reasonInput.value = '';
+            reasonInput.disabled = false;
+            ptsInput.focus();
+        } else {
+            const rule = flatBonusRules[parseInt(val)];
+            ptsInput.value = rule.pts;
+            ptsInput.disabled = true;
+            reasonInput.value = rule.title;
+            reasonInput.disabled = true;
+        }
+    }
+
+    function submitBonusScore() {
+        const { group, index } = currentEditing;
+        if(group === null || index === null) return;
+
+        const pts = parseInt(document.getElementById('bonusPointsInput').value);
+        const reason = document.getElementById('bonusReasonInput').value.trim();
+
+        if(isNaN(pts) || pts <= 0) return alert('Vui lòng nhập số điểm cộng hợp lệ!');
+        if(!reason) return alert('Vui lòng nhập lý do cộng điểm!');
+
+        let student = classScores[group][index];
+        student.score += pts;
+        let dateStr = new Date().toLocaleDateString('vi-VN') + ' ' + new Date().toLocaleTimeString('vi-VN');
+        student.history.unshift({ val: pts, reason: reason, date: dateStr });
+
+        saveData();
+        renderTable();
+        closeBonusModal();
+    }
+
+    // --- TRỪ ĐIỂM (TỰ ĐỘNG & TÙY CHỈNH) ---
+    function openMinusModal(group, studentIndex) {
+        currentEditing = { group, index: studentIndex };
+        const student = classScores[group][studentIndex];
+        document.getElementById('minusStudentName').innerText = `Học sinh: ${student.name} (${group})`;
+
+        const select = document.getElementById('minusSelect');
+        let optionsHtml = minusRulesList.map((rule, idx) => 
+            `<option value="${idx}">${rule.title} (-${rule.pts}đ)</option>`
+        ).join('') + `<option value="custom">-- Lý do vi phạm khác (Tự nhập điểm) --</option>`;
+
+        select.innerHTML = optionsHtml;
+        handleMinusSelectChange();
+        document.getElementById('minusScoreModal').style.display = 'flex';
+    }
+
+    function closeMinusModal() {
+        document.getElementById('minusScoreModal').style.display = 'none';
+    }
+
+    function handleMinusSelectChange() {
+        const select = document.getElementById('minusSelect');
+        const val = select.value;
+        const ptsInput = document.getElementById('minusPointsInput');
+        const reasonInput = document.getElementById('minusReasonInput');
+
+        if(val === 'custom') {
+            ptsInput.value = '';
+            ptsInput.disabled = false;
+            reasonInput.value = '';
+            reasonInput.disabled = false;
+            ptsInput.focus();
+        } else {
+            const rule = minusRulesList[parseInt(val)];
+            ptsInput.value = rule.pts;
+            ptsInput.disabled = true;
+            reasonInput.value = rule.title;
+            reasonInput.disabled = true;
+        }
+    }
+
+    function submitMinusScore() {
+        const { group, index } = currentEditing;
+        if(group === null || index === null) return;
+
+        const pts = parseInt(document.getElementById('minusPointsInput').value);
+        const reason = document.getElementById('minusReasonInput').value.trim();
+
+        if(isNaN(pts) || pts <= 0) return alert('Vui lòng nhập số điểm trừ hợp lệ!');
+        if(!reason) return alert('Vui lòng nhập lý do vi phạm!');
+
+        let student = classScores[group][index];
+        student.score -= pts;
+        let dateStr = new Date().toLocaleDateString('vi-VN') + ' ' + new Date().toLocaleTimeString('vi-VN');
+        student.history.unshift({ val: -pts, reason: reason, date: dateStr });
+
+        saveData();
+        renderTable();
+        closeMinusModal();
+    }
+
+    // --- HOÀN TÁC / XÓA LỊCH SỬ GHI NHẬN ĐIỂM ---
+    function deleteHistoryItem(group, studentIndex, historyIndex) {
+        if (!confirm("Bạn có chắc chắn muốn xóa lượt ghi nhận điểm này? Tổng điểm học sinh sẽ được tính toán khôi phục tương ứng.")) return;
+        
+        let student = classScores[group][studentIndex];
+        let item = student.history[historyIndex];
+        
+        student.score -= item.val; // Khôi phục lại điểm trước đó
+        student.history.splice(historyIndex, 1);
+        
+        saveData();
+        renderTable();
+    }
+
+    // --- TAB & BẢNG ĐIỂM ---
+    function openTab(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
+        
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("active");
+        if(tabName === 'quanlydiem') renderTable();
+    }
+
+    function renderTable() {
+        const group = document.getElementById("groupSelect").value;
+        const searchQuery = document.getElementById("searchInput") ? document.getElementById("searchInput").value.toLowerCase().trim() : "";
+        const tbody = document.getElementById("tableBody");
+        const thAction = document.getElementById("thAction");
+        tbody.innerHTML = ""; 
+
+        let canEdit = false;
+        if (loggedInUserKey && users[loggedInUserKey]) {
+            const role = users[loggedInUserKey].role;
+            if (role === 'admin' || role === group) canEdit = true;
+        }
+
+        thAction.style.display = canEdit ? "table-cell" : "none";
+        let members = classScores[group];
+
+        members.forEach((student, index) => {
+            if (searchQuery && !student.name.toLowerCase().includes(searchQuery)) return;
+
+            let tr = document.createElement("tr");
+            
+            let historyHtml = student.history.map((h, hIdx) => {
+                let delBtn = canEdit ? `<button class="del-history-btn" onclick="deleteHistoryItem('${group}', ${index}, ${hIdx})" title="Xóa/Hoàn tác">✕</button>` : '';
+                return `
+                    <div class="history-item">
+                        <span style="color: ${h.val > 0 ? '#16a34a' : '#dc2626'}; font-weight: 600;">
+                            ${h.val > 0 ? '+' : ''}${h.val}đ: ${h.reason}
+                            <span style="font-size:11px; color:#94a3b8; font-weight: normal;">(${h.date})</span>
+                        </span>
+                        ${delBtn}
+                    </div>
+                `;
+            }).join('');
+
+            if (!historyHtml) historyHtml = "<i style='color:#94a3b8'>Chưa có ghi nhận</i>";
+
+            let leaderTag = student.isLeader ? `<span class="leader-badge">Tổ trưởng</span>` : "";
+            
+            let actionTd = canEdit ? `
+                <td style="text-align: center; vertical-align: middle;">
+                    <div style="display: flex; gap: 8px; justify-content: center;">
+                        <button class="action-btn success-btn" onclick="openBonusModal('${group}', ${index})" style="width: 75px;">+ Cộng</button>
+                        <button class="action-btn danger-btn" onclick="openMinusModal('${group}', ${index})" style="width: 75px;">- Trừ</button>
+                    </div>
+                </td>
+            ` : "";
+
+            tr.innerHTML = `
+                <td style="text-align: center;">${index + 1}</td>
+                <td><strong>${student.name}</strong> ${leaderTag}</td>
+                <td class="score-display">${student.score}</td>
+                <td><div class="history-box">${historyHtml}</div></td>
+                ${actionTd}
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function exportReport() {
+        window.print();
+    }
+
+    function resetData() {
+        if (confirm("Lưu ý: Hành động này sẽ đưa ĐIỂM và LỊCH SỬ của TẤT CẢ TỔ về 100đ ban đầu. Bạn có chắc chắn?")) {
+            initScores();
+            renderTable();
+            alert("Đã làm mới dữ liệu toàn lớp!");
+        }
+    }
+
+    renderBonusRules();
+    updateAuthUI();
+    if(document.getElementById('quanlydiem').classList.contains('active')) renderTable();
+</script>
+</body>
+</html>
